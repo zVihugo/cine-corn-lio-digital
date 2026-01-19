@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import "@fontsource-variable/plus-jakarta-sans";
 
 @layer base {
   :root {
@@ -104,11 +104,15 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans Variable', sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.6;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Plus Jakarta Sans Variable', sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 }
 
