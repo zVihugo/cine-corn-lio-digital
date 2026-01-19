@@ -1,8 +1,10 @@
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { snacks } from "@/data/snacks";
+import { useCinema } from "@/contexts/CinemaContext";
 
 const BomboniereSection = () => {
+  const { snacks } = useCinema();
+  
   const formatPrice = (price: number) => {
     return price.toLocaleString("pt-BR", {
       style: "currency",

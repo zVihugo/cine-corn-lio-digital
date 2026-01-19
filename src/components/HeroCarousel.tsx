@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Play, Ticket, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { featuredMovies, Movie } from "@/data/movies";
+import { useCinema } from "@/contexts/CinemaContext";
+import { Movie } from "@/data/movies";
 
 const HeroCarousel = () => {
+  const { featuredMovies } = useCinema();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 

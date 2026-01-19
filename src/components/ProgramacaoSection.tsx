@@ -3,9 +3,11 @@ import { Calendar, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MovieCard from "./MovieCard";
 import MovieDetailModal from "./MovieDetailModal";
-import { movies, genres, Movie, getMoviesByDay } from "@/data/movies";
+import { genres, Movie } from "@/data/movies";
+import { useCinema } from "@/contexts/CinemaContext";
 
 const ProgramacaoSection = () => {
+  const { getMoviesByDay } = useCinema();
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedGenre, setSelectedGenre] = useState("Todos");
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -28,7 +30,7 @@ const ProgramacaoSection = () => {
     }
     
     setVisibleMovies(filtered);
-  }, [selectedDay, selectedGenre]);
+  }, [selectedDay, selectedGenre, getMoviesByDay]);
 
   // Intersection Observer for fade-in animation
   useEffect(() => {
