@@ -1,9 +1,11 @@
-import { MapPin, Phone, Clock, Instagram, Facebook, Youtube, MessageCircle, Users, Ticket } from "lucide-react";
+import { MapPin, Phone, Clock, Instagram, Facebook, Youtube, MessageCircle, Users, Ticket, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
 const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5543991248744";
 const GROUP_URL = "https://chat.whatsapp.com/FURuk506HeM89TliH493NI";
+const MAPS_URL = "https://www.google.com/maps/dir/?api=1&destination=-23.177800558814756,-50.64708381258222";
+const MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.2699!2d-50.64708381258222!3d-23.177800558814756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDEwJzQwLjEiUyA1MMKwMzgnNDkuNSJX!5e0!3m2!1spt-BR!2sbr";
 
 const Footer = () => {
   return (
@@ -15,7 +17,7 @@ const Footer = () => {
             {/* Map */}
             <div className="rounded-2xl overflow-hidden shadow-2xl aspect-video lg:aspect-auto lg:h-[400px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3661.0876741547373!2d-50.64946568503551!3d-23.18072558486371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94efbe2d7d8d3a67%3A0x8f0a9f0a9f0a9f0a!2sCorn%C3%A9lio%20Proc%C3%B3pio%2C%20PR!5e0!3m2!1spt-BR!2sbr!4v1620000000000!5m2!1spt-BR!2sbr"
+                src={MAPS_EMBED_URL}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -43,8 +45,8 @@ const Footer = () => {
                   <div>
                     <h3 className="font-semibold text-foreground">Endereço</h3>
                     <p className="text-muted-foreground">
-                      Rua Brasil, 1234 - Centro<br />
-                      Cornélio Procópio - PR, 86300-000
+                      Av. XV de Novembro, 84 – Centro<br />
+                      Cornélio Procópio – PR, 86300-000
                     </p>
                   </div>
                 </div>
@@ -67,10 +69,9 @@ const Footer = () => {
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Contato</h3>
+                    <h3 className="font-semibold text-foreground">Telefone / WhatsApp</h3>
                     <p className="text-muted-foreground">
-                      (43) 3523-1234<br />
-                      WhatsApp: (43) 99999-1234
+                      +55 (43) 99124-8744
                     </p>
                   </div>
                 </div>
@@ -78,11 +79,21 @@ const Footer = () => {
 
               <div className="flex flex-wrap gap-3">
                 <a
-                  href={TICKET_URL}
+                  href={MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <Button variant="gold" size="lg">
+                    <Navigation className="w-4 h-4" />
+                    Como Chegar
+                  </Button>
+                </a>
+                <a
+                  href={TICKET_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg">
                     <Ticket className="w-4 h-4" />
                     Comprar Ingresso
                   </Button>
@@ -133,14 +144,11 @@ const Footer = () => {
               <a href="#programacao" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Programação
               </a>
-              <a href="#bomboniere" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Bomboniere
-              </a>
               <a href="#localizacao" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Localização
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Política de Privacidade
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                Contato
               </a>
             </div>
 

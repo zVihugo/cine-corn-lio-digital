@@ -189,15 +189,21 @@ const MovieDetailModal = ({ movie, onClose }: MovieDetailModalProps) => {
 
               {/* Location */}
               <div className="pt-4 border-t border-border">
-                <div className="flex items-start gap-3">
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=-23.177800558814756,-50.64708381258222"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 hover:bg-secondary/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
+                >
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-medium text-foreground">Cine Teatro Cornélio Procópio</h4>
                     <p className="text-sm text-muted-foreground">
-                      R. XV de Novembro, Centro - Cornélio Procópio, PR
+                      Av. XV de Novembro, 84 – Centro, Cornélio Procópio – PR
                     </p>
+                    <span className="text-xs text-primary mt-1 inline-block">Clique para ver rotas →</span>
                   </div>
-                </div>
+                </a>
               </div>
             </div>
           </div>
