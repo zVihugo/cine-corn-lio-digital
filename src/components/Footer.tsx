@@ -1,5 +1,9 @@
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Youtube } from "lucide-react";
+import { MapPin, Phone, Clock, Instagram, Facebook, Youtube, MessageCircle, Users, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
+const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5543991248744";
+const GROUP_URL = "https://chat.whatsapp.com/FURuk506HeM89TliH493NI";
 
 const Footer = () => {
   return (
@@ -73,14 +77,36 @@ const Footer = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button variant="gold" size="lg">
-                  <MapPin className="w-4 h-4" />
-                  Como Chegar
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Phone className="w-4 h-4" />
-                  Ligar Agora
-                </Button>
+                <a
+                  href={TICKET_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="gold" size="lg">
+                    <Ticket className="w-4 h-4" />
+                    Comprar Ingresso
+                  </Button>
+                </a>
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg">
+                    <MessageCircle className="w-4 h-4" />
+                    Fale Conosco
+                  </Button>
+                </a>
+                <a
+                  href={GROUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg">
+                    <Users className="w-4 h-4" />
+                    Participe do Grupo
+                  </Button>
+                </a>
               </div>
             </div>
           </div>

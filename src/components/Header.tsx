@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, Ticket, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo-cine.png";
+
+const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
+const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5543991248744";
+const GROUP_URL = "https://chat.whatsapp.com/FURuk506HeM89TliH493NI";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,7 +39,31 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <a
+              href={TICKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:block"
+            >
+              <Button variant="gold" size="sm">
+                <Ticket className="w-4 h-4" />
+                Comprar Ingresso
+              </Button>
+            </a>
+            
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:block"
+            >
+              <Button variant="outline" size="sm">
+                <MessageCircle className="w-4 h-4" />
+                Fale Conosco
+              </Button>
+            </a>
+
             <Link to="/admin">
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                 <User className="w-5 h-5" />
@@ -71,13 +99,39 @@ const Header = () => {
               {item.label}
             </a>
           ))}
-          <Link 
-            to="/admin" 
-            className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+          
+          <a
+            href={TICKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-lg font-medium text-primary py-2"
             onClick={() => setIsMenuOpen(false)}
           >
-            Administração
-          </Link>
+            <Ticket className="w-5 h-5" />
+            Comprar Ingresso
+          </a>
+          
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <MessageCircle className="w-5 h-5" />
+            Fale Conosco
+          </a>
+          
+          <a
+            href={GROUP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <Users className="w-5 h-5" />
+            Participe do Grupo
+          </a>
         </nav>
       </div>
     </header>

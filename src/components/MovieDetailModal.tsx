@@ -1,9 +1,11 @@
-import { X, Clock, Play, MapPin, User, Film, Calendar } from "lucide-react";
+import { X, Clock, Play, MapPin, User, Film, Calendar, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Movie } from "@/hooks/useMovies";
 import { useState } from "react";
 import TrailerModal from "./TrailerModal";
+
+const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
 
 interface MovieDetailModalProps {
   movie: Movie;
@@ -169,6 +171,21 @@ const MovieDetailModal = ({ movie, onClose }: MovieDetailModalProps) => {
                   </div>
                 </div>
               )}
+
+              {/* Buy Ticket Button */}
+              <div className="pt-4">
+                <a
+                  href={TICKET_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button variant="gold" size="lg" className="w-full">
+                    <Ticket className="w-5 h-5" />
+                    Comprar Ingresso
+                  </Button>
+                </a>
+              </div>
 
               {/* Location */}
               <div className="pt-4 border-t border-border">
