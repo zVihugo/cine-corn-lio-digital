@@ -137,10 +137,16 @@ const HeroCarousel = () => {
                     Ver Trailer
                   </Button>
                 )}
-                <Button variant="heroOutline" size="xl">
-                  <Ticket className="w-5 h-5" />
-                  Comprar Ingresso
-                </Button>
+                <a
+                  href="https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="heroOutline" size="xl">
+                    <Ticket className="w-5 h-5" />
+                    Comprar Ingresso
+                  </Button>
+                </a>
               </div>
 
               {/* Sessions Preview */}
