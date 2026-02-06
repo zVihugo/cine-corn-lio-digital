@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo-cine.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
     { label: "Programação", href: "#programacao" },
-    { label: "Bomboniere", href: "#bomboniere" },
     { label: "Unidade", href: "#localizacao" },
   ];
 
@@ -16,12 +16,10 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo Icon Only */}
-          <a href="/" className="flex items-center group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center shadow-lg group-hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-shadow duration-300">
-              <span className="text-primary-foreground font-bold text-lg">CT</span>
-            </div>
-          </a>
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="Cine Cornélio Procópio" className="h-10 md:h-12" />
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-10">
