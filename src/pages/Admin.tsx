@@ -1,39 +1,41 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Film, Popcorn, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Film, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCinema } from "@/contexts/CinemaContext";
 import MovieFormModal from "@/components/admin/MovieFormModal";
-import SnackFormModal from "@/components/admin/SnackFormModal";
-import { Movie } from "@/data/movies";
-import { SnackItem } from "@/data/snacks";
+import { useMovies, Movie } from "@/hooks/useMovies";
+import { useToast } from "@/hooks/use-toast";
 
 const Admin = () => {
-  const { movies, snacks, deleteMovie, deleteSnack } = useCinema();
-  const [activeTab, setActiveTab] = useState<"movies" | "snacks">("movies");
+  const { movies, isLoading, deleteMovie } = useMovies();
+  const { toast } = useToast();
   const [isMovieModalOpen, setIsMovieModalOpen] = useState(false);
-  const [isSnackModalOpen, setIsSnackModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
-  const [editingSnack, setEditingSnack] = useState<SnackItem | null>(null);
 
   const handleEditMovie = (movie: Movie) => {
     setEditingMovie(movie);
     setIsMovieModalOpen(true);
   };
 
-  const handleEditSnack = (snack: SnackItem) => {
-    setEditingSnack(snack);
-    setIsSnackModalOpen(true);
+  const handleDeleteMovie = async (id: string) => {
+    try {
+      await deleteMovie.mutateAsync(id);
+      toast({
+        title: "Filme removido",
+        description: "O filme foi removido com sucesso.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o filme.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCloseMovieModal = () => {
     setIsMovieModalOpen(false);
     setEditingMovie(null);
-  };
-
-  const handleCloseSnackModal = () => {
-    setIsSnackModalOpen(false);
-    setEditingSnack(null);
   };
 
   return (
@@ -55,37 +57,36 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-8">
-          <Button
-            variant={activeTab === "movies" ? "gold" : "secondary"}
-            onClick={() => setActiveTab("movies")}
-            className="gap-2"
-          >
-            <Film className="w-4 h-4" />
-            Filmes
-          </Button>
-          <Button
-            variant={activeTab === "snacks" ? "gold" : "secondary"}
-            onClick={() => setActiveTab("snacks")}
-            className="gap-2"
-          >
-            <Popcorn className="w-4 h-4" />
-            Bomboniere
-          </Button>
-        </div>
+        {/* Movies Section */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Film className="w-6 h-6 text-primary" />
+              Filmes em Cartaz
+            </h2>
+            <Button variant="gold" onClick={() => setIsMovieModalOpen(true)} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Adicionar Filme
+            </Button>
+          </div>
 
-        {/* Movies Tab */}
-        {activeTab === "movies" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Filmes em Cartaz</h2>
-              <Button variant="gold" onClick={() => setIsMovieModalOpen(true)} className="gap-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : movies.length === 0 ? (
+            <div className="text-center py-12 glass-strong rounded-xl">
+              <p className="text-muted-foreground">Nenhum filme cadastrado ainda.</p>
+              <Button
+                variant="gold"
+                className="mt-4"
+                onClick={() => setIsMovieModalOpen(true)}
+              >
                 <Plus className="w-4 h-4" />
-                Adicionar Filme
+                Adicionar Primeiro Filme
               </Button>
             </div>
-
+          ) : (
             <div className="grid gap-4">
               {movies.map((movie) => (
                 <div
@@ -93,24 +94,30 @@ const Admin = () => {
                   className="glass-strong rounded-xl p-4 flex items-center gap-4"
                 >
                   <img
-                    src={movie.poster}
+                    src={movie.poster_url}
                     alt={movie.title}
                     className="w-16 h-24 object-cover rounded-lg"
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-foreground truncate">{movie.title}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {movie.genre.join(", ")} • {movie.duration}
+                      {movie.genre?.join(", ")} • {movie.duration}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {movie.sessions.length} sessões configuradas
+                      {movie.sessions?.length || 0} sessões configuradas
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`badge-age badge-age-${movie.ageRating}`}
+                      className={`px-2 py-1 rounded text-xs font-bold ${
+                        movie.age_rating === "L"
+                          ? "bg-green-600 text-white"
+                          : movie.age_rating === "18"
+                          ? "bg-black text-white"
+                          : "bg-yellow-500 text-black"
+                      }`}
                     >
-                      {movie.ageRating}
+                      {movie.age_rating}
                     </span>
                     <Button
                       variant="ghost"
@@ -123,7 +130,7 @@ const Admin = () => {
                       variant="ghost"
                       size="icon"
                       className="text-destructive hover:text-destructive"
-                      onClick={() => deleteMovie(movie.id)}
+                      onClick={() => handleDeleteMovie(movie.id)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -131,74 +138,15 @@ const Admin = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Snacks Tab */}
-        {activeTab === "snacks" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Bomboniere</h2>
-              <Button variant="gold" onClick={() => setIsSnackModalOpen(true)} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Adicionar Item
-              </Button>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {snacks.map((snack) => (
-                <div
-                  key={snack.id}
-                  className="glass-strong rounded-xl p-4 flex items-center gap-4"
-                >
-                  <img
-                    src={snack.image}
-                    alt={snack.name}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{snack.name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {snack.description}
-                    </p>
-                    <p className="text-primary font-bold mt-1">
-                      R$ {snack.price.toFixed(2).replace(".", ",")}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditSnack(snack)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => deleteSnack(snack.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
 
-      {/* Modals */}
+      {/* Modal */}
       <MovieFormModal
         isOpen={isMovieModalOpen}
         onClose={handleCloseMovieModal}
         movie={editingMovie}
-      />
-      <SnackFormModal
-        isOpen={isSnackModalOpen}
-        onClose={handleCloseSnackModal}
-        snack={editingSnack}
       />
     </div>
   );

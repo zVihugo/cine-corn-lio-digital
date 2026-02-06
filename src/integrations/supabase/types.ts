@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      movie_sessions: {
+        Row: {
+          created_at: string
+          days: string[]
+          highlight: boolean | null
+          id: string
+          movie_id: string
+          tech: string
+          time: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          days?: string[]
+          highlight?: boolean | null
+          id?: string
+          movie_id: string
+          tech?: string
+          time: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          days?: string[]
+          highlight?: boolean | null
+          id?: string
+          movie_id?: string
+          tech?: string
+          time?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movie_sessions_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      movies: {
+        Row: {
+          age_rating: string
+          cast_members: string[] | null
+          created_at: string
+          director: string | null
+          duration: string | null
+          genre: string[] | null
+          id: string
+          poster_url: string
+          synopsis: string | null
+          title: string
+          trailer_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          age_rating?: string
+          cast_members?: string[] | null
+          created_at?: string
+          director?: string | null
+          duration?: string | null
+          genre?: string[] | null
+          id?: string
+          poster_url: string
+          synopsis?: string | null
+          title: string
+          trailer_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age_rating?: string
+          cast_members?: string[] | null
+          created_at?: string
+          director?: string | null
+          duration?: string | null
+          genre?: string[] | null
+          id?: string
+          poster_url?: string
+          synopsis?: string | null
+          title?: string
+          trailer_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

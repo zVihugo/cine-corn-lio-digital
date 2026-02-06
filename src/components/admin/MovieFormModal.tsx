@@ -3,8 +3,8 @@ import { X, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCinema } from "@/contexts/CinemaContext";
-import { Movie, Session } from "@/data/movies";
+import { useMovies, Movie, MovieSession } from "@/hooks/useMovies";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -19,79 +19,123 @@ interface MovieFormModalProps {
   movie?: Movie | null;
 }
 
-const emptySession: Session = { time: "", days: [], type: "DUB", tech: "2D" };
+interface SessionInput {
+  time: string;
+  days: string;
+  type: "DUB" | "LEG";
+  tech: "2D" | "3D";
+  highlight: boolean;
+}
+
+const emptySession: SessionInput = { time: "", days: "", type: "DUB", tech: "2D", highlight: false };
 
 const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
-  const { addMovie, updateMovie } = useCinema();
+  const { addMovie, updateMovie } = useMovies();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [formData, setFormData] = useState({
     title: "",
-    poster: "",
-    heroImage: "",
-    ageRating: "12" as Movie["ageRating"],
+    poster_url: "",
+    trailer_url: "",
+    age_rating: "12",
     genre: "",
     duration: "",
     synopsis: "",
     director: "",
-    cast: "",
-    trailerUrl: "",
+    cast_members: "",
   });
-  const [sessions, setSessions] = useState<Session[]>([{ ...emptySession }]);
+  const [sessions, setSessions] = useState<SessionInput[]>([{ ...emptySession }]);
 
   useEffect(() => {
     if (movie) {
       setFormData({
         title: movie.title,
-        poster: movie.poster,
-        heroImage: movie.heroImage || "",
-        ageRating: movie.ageRating,
-        genre: movie.genre.join(", "),
-        duration: movie.duration,
-        synopsis: movie.synopsis,
-        director: movie.director,
-        cast: movie.cast.join(", "),
-        trailerUrl: movie.trailerUrl || "",
+        poster_url: movie.poster_url,
+        trailer_url: movie.trailer_url || "",
+        age_rating: movie.age_rating,
+        genre: movie.genre?.join(", ") || "",
+        duration: movie.duration || "",
+        synopsis: movie.synopsis || "",
+        director: movie.director || "",
+        cast_members: movie.cast_members?.join(", ") || "",
       });
-      setSessions(movie.sessions.length ? movie.sessions : [{ ...emptySession }]);
+      setSessions(
+        movie.sessions?.length
+          ? movie.sessions.map((s) => ({
+              time: s.time,
+              days: s.days?.join(", ") || "",
+              type: s.type,
+              tech: s.tech,
+              highlight: s.highlight || false,
+            }))
+          : [{ ...emptySession }]
+      );
     } else {
       setFormData({
         title: "",
-        poster: "",
-        heroImage: "",
-        ageRating: "12",
+        poster_url: "",
+        trailer_url: "",
+        age_rating: "12",
         genre: "",
         duration: "",
         synopsis: "",
         director: "",
-        cast: "",
-        trailerUrl: "",
+        cast_members: "",
       });
       setSessions([{ ...emptySession }]);
     }
   }, [movie, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const movieData = {
-      title: formData.title,
-      poster: formData.poster || "/placeholder.svg",
-      heroImage: formData.heroImage || undefined,
-      ageRating: formData.ageRating,
-      genre: formData.genre.split(",").map((g) => g.trim()).filter(Boolean),
-      duration: formData.duration,
-      synopsis: formData.synopsis,
-      director: formData.director,
-      cast: formData.cast.split(",").map((c) => c.trim()).filter(Boolean),
-      trailerUrl: formData.trailerUrl || undefined,
-      sessions: sessions.filter((s) => s.time),
-    };
+    setIsSubmitting(true);
 
-    if (movie) {
-      updateMovie(movie.id, movieData);
-    } else {
-      addMovie(movieData);
+    try {
+      const movieData = {
+        title: formData.title,
+        poster_url: formData.poster_url || "/placeholder.svg",
+        trailer_url: formData.trailer_url || undefined,
+        age_rating: formData.age_rating,
+        genre: formData.genre.split(",").map((g) => g.trim()).filter(Boolean),
+        duration: formData.duration || undefined,
+        synopsis: formData.synopsis || undefined,
+        director: formData.director || undefined,
+        cast_members: formData.cast_members.split(",").map((c) => c.trim()).filter(Boolean),
+        sessions: sessions
+          .filter((s) => s.time)
+          .map((s) => ({
+            time: s.time,
+            days: s.days.split(",").map((d) => d.trim()).filter(Boolean),
+            type: s.type as "DUB" | "LEG",
+            tech: s.tech as "2D" | "3D",
+            highlight: s.highlight,
+          })),
+      };
+
+      if (movie) {
+        await updateMovie.mutateAsync({ id: movie.id, ...movieData });
+        toast({
+          title: "Filme atualizado",
+          description: "As alterações foram salvas com sucesso.",
+        });
+      } else {
+        await addMovie.mutateAsync(movieData);
+        toast({
+          title: "Filme adicionado",
+          description: "O filme foi cadastrado com sucesso.",
+        });
+      }
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o filme.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    onClose();
   };
 
   const addSession = () => {
@@ -102,7 +146,7 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
     setSessions(sessions.filter((_, i) => i !== index));
   };
 
-  const updateSession = (index: number, field: keyof Session, value: string) => {
+  const updateSession = (index: number, field: keyof SessionInput, value: string | boolean) => {
     const updated = [...sessions];
     updated[index] = { ...updated[index], [field]: value };
     setSessions(updated);
@@ -138,24 +182,23 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
 
           {/* Poster URL */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">URL do Pôster</label>
+            <label className="text-sm font-medium text-foreground">URL do Pôster *</label>
             <Input
-              value={formData.poster}
-              onChange={(e) => setFormData({ ...formData, poster: e.target.value })}
+              value={formData.poster_url}
+              onChange={(e) => setFormData({ ...formData, poster_url: e.target.value })}
               placeholder="https://exemplo.com/poster.jpg"
+              required
               className="bg-background/50"
             />
           </div>
 
-          {/* Hero Image URL */}
+          {/* Trailer URL */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              URL da Imagem Hero (destaque)
-            </label>
+            <label className="text-sm font-medium text-foreground">URL do Trailer (YouTube)</label>
             <Input
-              value={formData.heroImage}
-              onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
-              placeholder="https://exemplo.com/hero.jpg"
+              value={formData.trailer_url}
+              onChange={(e) => setFormData({ ...formData, trailer_url: e.target.value })}
+              placeholder="https://youtube.com/watch?v=..."
               className="bg-background/50"
             />
           </div>
@@ -165,10 +208,8 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Classificação *</label>
               <Select
-                value={formData.ageRating}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, ageRating: value as Movie["ageRating"] })
-                }
+                value={formData.age_rating}
+                onValueChange={(value) => setFormData({ ...formData, age_rating: value })}
               >
                 <SelectTrigger className="bg-background/50">
                   <SelectValue />
@@ -186,12 +227,11 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
 
             {/* Duration */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Duração *</label>
+              <label className="text-sm font-medium text-foreground">Duração</label>
               <Input
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 placeholder="2h 15min"
-                required
                 className="bg-background/50"
               />
             </div>
@@ -199,12 +239,11 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
 
           {/* Genre */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Gêneros *</label>
+            <label className="text-sm font-medium text-foreground">Gêneros</label>
             <Input
               value={formData.genre}
               onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
               placeholder="Ação, Aventura, Ficção Científica"
-              required
               className="bg-background/50"
             />
             <p className="text-xs text-muted-foreground">Separe os gêneros por vírgula</p>
@@ -212,24 +251,22 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
 
           {/* Synopsis */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Sinopse *</label>
+            <label className="text-sm font-medium text-foreground">Sinopse</label>
             <Textarea
               value={formData.synopsis}
               onChange={(e) => setFormData({ ...formData, synopsis: e.target.value })}
               placeholder="Descrição do filme..."
-              required
               className="bg-background/50 min-h-[100px]"
             />
           </div>
 
           {/* Director */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Diretor *</label>
+            <label className="text-sm font-medium text-foreground">Diretor</label>
             <Input
               value={formData.director}
               onChange={(e) => setFormData({ ...formData, director: e.target.value })}
               placeholder="Nome do diretor"
-              required
               className="bg-background/50"
             />
           </div>
@@ -238,29 +275,18 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Elenco</label>
             <Input
-              value={formData.cast}
-              onChange={(e) => setFormData({ ...formData, cast: e.target.value })}
+              value={formData.cast_members}
+              onChange={(e) => setFormData({ ...formData, cast_members: e.target.value })}
               placeholder="Ator 1, Ator 2, Ator 3"
               className="bg-background/50"
             />
             <p className="text-xs text-muted-foreground">Separe os nomes por vírgula</p>
           </div>
 
-          {/* Trailer URL */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">URL do Trailer</label>
-            <Input
-              value={formData.trailerUrl}
-              onChange={(e) => setFormData({ ...formData, trailerUrl: e.target.value })}
-              placeholder="https://youtube.com/watch?v=..."
-              className="bg-background/50"
-            />
-          </div>
-
           {/* Sessions */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Sessões</label>
+              <label className="text-sm font-medium text-foreground">Sessões (Dias/Horários)</label>
               <Button type="button" variant="outline" size="sm" onClick={addSession}>
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar
@@ -273,7 +299,7 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
                   <Input
                     value={session.time}
                     onChange={(e) => updateSession(index, "time", e.target.value)}
-                    placeholder="14:30"
+                    placeholder="15:10"
                     className="bg-background/50 w-24"
                   />
                   <Select
@@ -315,19 +341,21 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">Dias da semana</label>
                   <Input
-                    value={session.days?.join(", ") || ""}
-                    onChange={(e) => {
-                      const updated = [...sessions];
-                      updated[index] = { 
-                        ...updated[index], 
-                        days: e.target.value.split(",").map((d) => d.trim()).filter(Boolean) 
-                      };
-                      setSessions(updated);
-                    }}
-                    placeholder="Qui, Sex, Sáb, Dom"
+                    value={session.days}
+                    onChange={(e) => updateSession(index, "days", e.target.value)}
+                    placeholder="Qui, Sex, Sáb, Dom, Seg, Ter, Qua"
                     className="bg-background/50"
                   />
                 </div>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={session.highlight}
+                    onChange={(e) => updateSession(index, "highlight", e.target.checked)}
+                    className="rounded"
+                  />
+                  Destacar horário (cor especial)
+                </label>
               </div>
             ))}
           </div>
@@ -337,8 +365,8 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
             </Button>
-            <Button type="submit" variant="gold" className="flex-1">
-              {movie ? "Salvar Alterações" : "Adicionar Filme"}
+            <Button type="submit" variant="gold" className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? "Salvando..." : movie ? "Salvar Alterações" : "Adicionar Filme"}
             </Button>
           </div>
         </form>
