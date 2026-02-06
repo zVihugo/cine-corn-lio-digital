@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Movie, Session, featuredMovies as initialFeatured, movies as initialMovies } from "@/data/movies";
+import { Movie, featuredMovies as initialFeatured, movies as initialMovies } from "@/data/movies";
 import { SnackItem, snacks as initialSnacks } from "@/data/snacks";
 
 interface CinemaContextType {

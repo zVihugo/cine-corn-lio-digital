@@ -19,7 +19,7 @@ interface MovieFormModalProps {
   movie?: Movie | null;
 }
 
-const emptySession: Session = { time: "", type: "DUB", tech: "2D" };
+const emptySession: Session = { time: "", days: [], type: "DUB", tech: "2D" };
 
 const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
   const { addMovie, updateMovie } = useCinema();
@@ -268,48 +268,66 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
             </div>
 
             {sessions.map((session, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <Input
-                  value={session.time}
-                  onChange={(e) => updateSession(index, "time", e.target.value)}
-                  placeholder="14:30"
-                  className="bg-background/50 w-24"
-                />
-                <Select
-                  value={session.type}
-                  onValueChange={(value) => updateSession(index, "type", value)}
-                >
-                  <SelectTrigger className="bg-background/50 w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DUB">DUB</SelectItem>
-                    <SelectItem value="LEG">LEG</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={session.tech}
-                  onValueChange={(value) => updateSession(index, "tech", value)}
-                >
-                  <SelectTrigger className="bg-background/50 w-20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2D">2D</SelectItem>
-                    <SelectItem value="3D">3D</SelectItem>
-                  </SelectContent>
-                </Select>
-                {sessions.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeSession(index)}
-                    className="text-destructive"
+              <div key={index} className="flex flex-col gap-2 p-3 bg-background/30 rounded-lg">
+                <div className="flex gap-2 items-center">
+                  <Input
+                    value={session.time}
+                    onChange={(e) => updateSession(index, "time", e.target.value)}
+                    placeholder="14:30"
+                    className="bg-background/50 w-24"
+                  />
+                  <Select
+                    value={session.type}
+                    onValueChange={(value) => updateSession(index, "type", value)}
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
+                    <SelectTrigger className="bg-background/50 w-24">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DUB">DUB</SelectItem>
+                      <SelectItem value="LEG">LEG</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={session.tech}
+                    onValueChange={(value) => updateSession(index, "tech", value)}
+                  >
+                    <SelectTrigger className="bg-background/50 w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2D">2D</SelectItem>
+                      <SelectItem value="3D">3D</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {sessions.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeSession(index)}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">Dias da semana</label>
+                  <Input
+                    value={session.days?.join(", ") || ""}
+                    onChange={(e) => {
+                      const updated = [...sessions];
+                      updated[index] = { 
+                        ...updated[index], 
+                        days: e.target.value.split(",").map((d) => d.trim()).filter(Boolean) 
+                      };
+                      setSessions(updated);
+                    }}
+                    placeholder="Qui, Sex, Sáb, Dom"
+                    className="bg-background/50"
+                  />
+                </div>
               </div>
             ))}
           </div>
