@@ -1,4 +1,4 @@
-import { Clock, Ticket, Info } from "lucide-react";
+import { Clock, Ticket, Info, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Movie } from "@/data/movies";
@@ -19,6 +19,12 @@ const MovieCard = ({ movie, onSelect }: MovieCardProps) => {
       "18": "age18",
     };
     return variants[age];
+  };
+
+  // Get unique days from all sessions
+  const getAllDays = () => {
+    const allDays = movie.sessions.flatMap((s) => s.days);
+    return [...new Set(allDays)];
   };
 
   return (
@@ -63,36 +69,34 @@ const MovieCard = ({ movie, onSelect }: MovieCardProps) => {
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="font-serif font-semibold text-lg text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+        <h3 className="font-serif font-semibold text-lg text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors">
           {movie.title}
         </h3>
         
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-          <Clock className="w-3.5 h-3.5" />
-          <span>{movie.duration}</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-          <span className="line-clamp-1">{movie.genre[0]}</span>
+        {/* Days */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+          <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="line-clamp-1">{getAllDays().join(", ")}</span>
         </div>
 
-        {/* Sessions */}
-        <div className="flex flex-wrap gap-1.5">
-          {movie.sessions.slice(0, 3).map((session, i) => (
-            <span
-              key={i}
-              className={`text-xs px-2 py-1 rounded ${
-                session.type === "DUB"
-                  ? "bg-primary/20 text-primary"
-                  : "bg-accent/20 text-accent"
-              }`}
-            >
-              {session.time}
-            </span>
+        {/* Sessions with times */}
+        <div className="flex flex-col gap-2">
+          {movie.sessions.map((session, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span
+                className={`text-sm font-bold px-2.5 py-1 rounded ${
+                  session.highlight
+                    ? "bg-amber-500/20 text-amber-400"
+                    : "bg-primary/20 text-primary"
+                }`}
+              >
+                {session.time}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {session.type === "DUB" ? "Dublado" : "Legendado"} • {session.tech}
+              </span>
+            </div>
           ))}
-          {movie.sessions.length > 3 && (
-            <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
-              +{movie.sessions.length - 3}
-            </span>
-          )}
         </div>
       </div>
     </div>
