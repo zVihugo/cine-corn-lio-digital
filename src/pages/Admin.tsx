@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Film, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
+import { ArrowLeft, Film, Plus, Pencil, Trash2, Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MovieFormModal from "@/components/admin/MovieFormModal";
+import AdminLogin from "@/components/admin/AdminLogin";
 import { useMovies, Movie } from "@/hooks/useMovies";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 const Admin = () => {
   const { movies, isLoading, deleteMovie } = useMovies();
+  const { isAuthenticated, isLoading: authLoading, signOut } = useAuth();
   const { toast } = useToast();
   const [isMovieModalOpen, setIsMovieModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
@@ -38,6 +41,36 @@ const Admin = () => {
     setEditingMovie(null);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Você saiu do painel administrativo.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível fazer logout.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Show login if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLogin />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -52,6 +85,10 @@ const Admin = () => {
               </Link>
               <h1 className="text-xl font-bold text-foreground">Administração</h1>
             </div>
+            <Button variant="ghost" onClick={handleSignOut} className="gap-2 text-muted-foreground">
+              <LogOut className="w-4 h-4" />
+              Sair
+            </Button>
           </div>
         </div>
       </header>
