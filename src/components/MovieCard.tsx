@@ -83,22 +83,24 @@ const MovieCard = ({ movie, onSelect }: MovieCardProps) => {
         </div>
 
         {/* Info */}
-        <div className="p-4">
-          <h3 className="font-semibold text-lg text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+        <div className="p-4 flex flex-col flex-1">
+          <h3 className="font-semibold text-lg text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem]">
             {movie.title}
           </h3>
           
           {/* Days */}
-          {getAllDays().length > 0 && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-              <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="line-clamp-1">{getAllDays().join(", ")}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 min-h-[1.25rem]">
+            {getAllDays().length > 0 && (
+              <>
+                <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="line-clamp-1">{getAllDays().join(", ")}</span>
+              </>
+            )}
+          </div>
 
           {/* Sessions with times */}
-          <div className="flex flex-col gap-2">
-            {movie.sessions?.map((session, i) => (
+          <div className="flex flex-col gap-2 mt-auto">
+            {movie.sessions?.slice(0, 3).map((session, i) => (
               <div key={i} className="flex items-center gap-2">
                 <span
                   className={`text-sm font-bold px-2.5 py-1 rounded ${

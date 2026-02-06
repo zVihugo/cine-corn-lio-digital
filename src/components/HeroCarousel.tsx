@@ -12,8 +12,8 @@ const HeroCarousel = () => {
   const [showTrailer, setShowTrailer] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  // Get featured movies (first 3)
-  const featuredMovies = movies.slice(0, 3);
+  // Get all movies for carousel
+  const featuredMovies = movies;
 
   const nextSlide = useCallback(() => {
     if (isAnimating || featuredMovies.length === 0) return;

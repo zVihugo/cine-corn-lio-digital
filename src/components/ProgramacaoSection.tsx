@@ -98,11 +98,11 @@ const ProgramacaoSection = () => {
 
         {/* Movies Grid */}
         {!isLoading && visibleMovies.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
             {visibleMovies.map((movie, index) => (
               <div
                 key={movie.id}
-                className="movie-card-wrapper opacity-0"
+                className="movie-card-wrapper opacity-0 h-full"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <MovieCard movie={movie} onSelect={setSelectedMovie} />
