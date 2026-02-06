@@ -1,11 +1,14 @@
-import { MapPin, Phone, Clock, Instagram, Facebook, Youtube, MessageCircle, Users, Ticket, Navigation } from "lucide-react";
+import { MapPin, Phone, Clock, Instagram, Facebook, MessageCircle, Users, Ticket, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo-cine-new.png";
 
 const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
 const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5543991248744";
 const GROUP_URL = "https://chat.whatsapp.com/FURuk506HeM89TliH493NI";
 const MAPS_URL = "https://www.google.com/maps/dir/?api=1&destination=-23.177800558814756,-50.64708381258222";
 const MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.2699!2d-50.64708381258222!3d-23.177800558814756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDEwJzQwLjEiUyA1MMKwMzgnNDkuNSJX!5e0!3m2!1spt-BR!2sbr";
+const FACEBOOK_URL = "https://www.facebook.com/cinecornelioprocopio";
+const INSTAGRAM_URL = "https://www.instagram.com/cinecornelioprocopio/";
 
 const Footer = () => {
   return (
@@ -129,14 +132,8 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 items-center">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center">
-                <span className="text-primary-foreground font-serif font-bold text-xl">CT</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-serif font-bold text-foreground">Cine Teatro</h3>
-                <p className="text-xs text-primary">Cornélio Procópio</p>
-              </div>
+            <div className="flex items-center justify-center md:justify-start">
+              <img src={logo} alt="Cine Cornélio Procópio" className="h-12 md:h-14" />
             </div>
 
             {/* Links */}
@@ -155,25 +152,22 @@ const Footer = () => {
             {/* Social */}
             <div className="flex justify-center md:justify-end gap-3">
               <a
-                href="#"
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all"
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all"
-                aria-label="YouTube"
-              >
-                <Youtube className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -184,7 +178,7 @@ const Footer = () => {
               © {new Date().getFullYear()} Cine Teatro Cornélio Procópio. Todos os direitos reservados.
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
-              Patrimônio Cultural de Cornélio Procópio, PR
+              Desenvolvido por Victor Moreira
             </p>
           </div>
         </div>
