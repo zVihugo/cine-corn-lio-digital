@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, X, User, Ticket, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo-cine.png";
+import logo from "@/assets/logo-cine-new.png";
 
 const TICKET_URL = "https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio";
 const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5543991248744";
