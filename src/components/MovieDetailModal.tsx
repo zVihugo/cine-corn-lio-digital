@@ -172,20 +172,33 @@ const MovieDetailModal = ({ movie, onClose }: MovieDetailModalProps) => {
                 </div>
               )}
 
-              {/* Buy Ticket Button */}
-              <div className="pt-4">
-                <a
-                  href={TICKET_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <Button variant="gold" size="lg" className="w-full">
-                    <Ticket className="w-5 h-5" />
-                    Comprar Ingresso
-                  </Button>
-                </a>
-              </div>
+              {/* Buy Ticket Button - Hide for coming soon */}
+              {!movie.is_coming_soon && (
+                <div className="pt-4">
+                  <a
+                    href={TICKET_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button variant="gold" size="lg" className="w-full">
+                      <Ticket className="w-5 h-5" />
+                      Comprar Ingresso
+                    </Button>
+                  </a>
+                </div>
+              )}
+              
+              {/* Coming Soon Message */}
+              {movie.is_coming_soon && (
+                <div className="pt-4">
+                  <div className="bg-amber-500/20 border border-amber-500/50 rounded-lg p-4 text-center">
+                    <span className="text-amber-400 font-semibold">
+                      🎬 Em breve nos cinemas
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Location */}
               <div className="pt-4 border-t border-border">

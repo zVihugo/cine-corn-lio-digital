@@ -44,6 +44,7 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
     synopsis: "",
     director: "",
     cast_members: "",
+    is_coming_soon: false,
   });
   const [sessions, setSessions] = useState<SessionInput[]>([{ ...emptySession }]);
 
@@ -59,6 +60,7 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
         synopsis: movie.synopsis || "",
         director: movie.director || "",
         cast_members: movie.cast_members?.join(", ") || "",
+        is_coming_soon: movie.is_coming_soon || false,
       });
       setSessions(
         movie.sessions?.length
@@ -82,6 +84,7 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
         synopsis: "",
         director: "",
         cast_members: "",
+        is_coming_soon: false,
       });
       setSessions([{ ...emptySession }]);
     }
@@ -102,15 +105,18 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
         synopsis: formData.synopsis || undefined,
         director: formData.director || undefined,
         cast_members: formData.cast_members.split(",").map((c) => c.trim()).filter(Boolean),
-        sessions: sessions
-          .filter((s) => s.time)
-          .map((s) => ({
-            time: s.time,
-            days: s.days.split(",").map((d) => d.trim()).filter(Boolean),
-            type: s.type as "DUB" | "LEG",
-            tech: s.tech as "2D" | "3D",
-            highlight: s.highlight,
-          })),
+        is_coming_soon: formData.is_coming_soon,
+        sessions: formData.is_coming_soon
+          ? [] // No sessions for coming soon movies
+          : sessions
+              .filter((s) => s.time)
+              .map((s) => ({
+                time: s.time,
+                days: s.days.split(",").map((d) => d.trim()).filter(Boolean),
+                type: s.type as "DUB" | "LEG",
+                tech: s.tech as "2D" | "3D",
+                highlight: s.highlight,
+              })),
       };
 
       if (movie) {
@@ -249,6 +255,23 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
             <p className="text-xs text-muted-foreground">Separe os gêneros por vírgula</p>
           </div>
 
+          {/* Coming Soon Toggle */}
+          <div className="flex items-center gap-3 p-3 bg-background/30 rounded-lg">
+            <input
+              type="checkbox"
+              id="is_coming_soon"
+              checked={formData.is_coming_soon}
+              onChange={(e) => setFormData({ ...formData, is_coming_soon: e.target.checked })}
+              className="w-5 h-5 rounded accent-amber-500"
+            />
+            <label htmlFor="is_coming_soon" className="cursor-pointer">
+              <span className="text-sm font-medium text-foreground">Filme "Em Breve"</span>
+              <p className="text-xs text-muted-foreground">
+                Marque se o filme ainda não está em cartaz (não exibirá sessões)
+              </p>
+            </label>
+          </div>
+
           {/* Synopsis */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Sinopse</label>
@@ -283,82 +306,84 @@ const MovieFormModal = ({ isOpen, onClose, movie }: MovieFormModalProps) => {
             <p className="text-xs text-muted-foreground">Separe os nomes por vírgula</p>
           </div>
 
-          {/* Sessions */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Sessões (Dias/Horários)</label>
-              <Button type="button" variant="outline" size="sm" onClick={addSession}>
-                <Plus className="w-4 h-4 mr-1" />
-                Adicionar
-              </Button>
-            </div>
-
-            {sessions.map((session, index) => (
-              <div key={index} className="flex flex-col gap-2 p-3 bg-background/30 rounded-lg">
-                <div className="flex gap-2 items-center">
-                  <Input
-                    value={session.time}
-                    onChange={(e) => updateSession(index, "time", e.target.value)}
-                    placeholder="15:10"
-                    className="bg-background/50 w-24"
-                  />
-                  <Select
-                    value={session.type}
-                    onValueChange={(value) => updateSession(index, "type", value)}
-                  >
-                    <SelectTrigger className="bg-background/50 w-24">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DUB">DUB</SelectItem>
-                      <SelectItem value="LEG">LEG</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={session.tech}
-                    onValueChange={(value) => updateSession(index, "tech", value)}
-                  >
-                    <SelectTrigger className="bg-background/50 w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2D">2D</SelectItem>
-                      <SelectItem value="3D">3D</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {sessions.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeSession(index)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-muted-foreground">Dias da semana</label>
-                  <Input
-                    value={session.days}
-                    onChange={(e) => updateSession(index, "days", e.target.value)}
-                    placeholder="Qui, Sex, Sáb, Dom, Seg, Ter, Qua"
-                    className="bg-background/50"
-                  />
-                </div>
-                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={session.highlight}
-                    onChange={(e) => updateSession(index, "highlight", e.target.checked)}
-                    className="rounded"
-                  />
-                  Destacar horário (cor especial)
-                </label>
+          {/* Sessions - Only show if not coming soon */}
+          {!formData.is_coming_soon && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-foreground">Sessões (Dias/Horários)</label>
+                <Button type="button" variant="outline" size="sm" onClick={addSession}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Adicionar
+                </Button>
               </div>
-            ))}
-          </div>
+
+              {sessions.map((session, index) => (
+                <div key={index} className="flex flex-col gap-2 p-3 bg-background/30 rounded-lg">
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      value={session.time}
+                      onChange={(e) => updateSession(index, "time", e.target.value)}
+                      placeholder="15:10"
+                      className="bg-background/50 w-24"
+                    />
+                    <Select
+                      value={session.type}
+                      onValueChange={(value) => updateSession(index, "type", value)}
+                    >
+                      <SelectTrigger className="bg-background/50 w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="DUB">DUB</SelectItem>
+                        <SelectItem value="LEG">LEG</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={session.tech}
+                      onValueChange={(value) => updateSession(index, "tech", value)}
+                    >
+                      <SelectTrigger className="bg-background/50 w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="2D">2D</SelectItem>
+                        <SelectItem value="3D">3D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {sessions.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeSession(index)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">Dias da semana</label>
+                    <Input
+                      value={session.days}
+                      onChange={(e) => updateSession(index, "days", e.target.value)}
+                      placeholder="Qui, Sex, Sáb, Dom, Seg, Ter, Qua"
+                      className="bg-background/50"
+                    />
+                  </div>
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={session.highlight}
+                      onChange={(e) => updateSession(index, "highlight", e.target.checked)}
+                      className="rounded"
+                    />
+                    Destacar horário (cor especial)
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">

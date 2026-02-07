@@ -23,6 +23,7 @@ export interface Movie {
   synopsis: string | null;
   director: string | null;
   cast_members: string[];
+  is_coming_soon: boolean;
   created_at: string;
   updated_at: string;
   sessions?: MovieSession[];
@@ -93,6 +94,7 @@ export const useMovies = () => {
       synopsis?: string;
       director?: string;
       cast_members: string[];
+      is_coming_soon?: boolean;
       sessions: Omit<MovieSession, "id" | "movie_id">[];
     }) => {
       const { sessions, ...movie } = movieData;
@@ -136,6 +138,7 @@ export const useMovies = () => {
       synopsis?: string;
       director?: string;
       cast_members: string[];
+      is_coming_soon?: boolean;
       sessions: Omit<MovieSession, "id" | "movie_id">[];
     }) => {
       const { sessions, ...movie } = movieData;

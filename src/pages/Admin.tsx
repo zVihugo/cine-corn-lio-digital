@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Film, Plus, Pencil, Trash2, Loader2, LogOut } from "lucide-react";
+import { ArrowLeft, Film, Plus, Pencil, Trash2, Loader2, LogOut, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MovieFormModal from "@/components/admin/MovieFormModal";
 import AdminLogin from "@/components/admin/AdminLogin";
@@ -93,8 +93,8 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Movies Section */}
+      <main className="container mx-auto px-4 py-8 space-y-12">
+        {/* Now Showing Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -111,69 +111,142 @@ const Admin = () => {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
-          ) : movies.length === 0 ? (
+          ) : movies.filter((m) => !m.is_coming_soon).length === 0 ? (
             <div className="text-center py-12 glass-strong rounded-xl">
-              <p className="text-muted-foreground">Nenhum filme cadastrado ainda.</p>
-              <Button
-                variant="gold"
-                className="mt-4"
-                onClick={() => setIsMovieModalOpen(true)}
-              >
-                <Plus className="w-4 h-4" />
-                Adicionar Primeiro Filme
-              </Button>
+              <p className="text-muted-foreground">Nenhum filme em cartaz ainda.</p>
             </div>
           ) : (
             <div className="grid gap-4">
-              {movies.map((movie) => (
-                <div
-                  key={movie.id}
-                  className="glass-strong rounded-xl p-4 flex items-center gap-4"
-                >
-                  <img
-                    src={movie.poster_url}
-                    alt={movie.title}
-                    className="w-16 h-24 object-cover rounded-lg"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{movie.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {movie.genre?.join(", ")} • {movie.duration}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {movie.sessions?.length || 0} sessões configuradas
-                    </p>
+              {movies
+                .filter((m) => !m.is_coming_soon)
+                .map((movie) => (
+                  <div
+                    key={movie.id}
+                    className="glass-strong rounded-xl p-4 flex items-center gap-4"
+                  >
+                    <img
+                      src={movie.poster_url}
+                      alt={movie.title}
+                      className="w-16 h-24 object-cover rounded-lg"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground truncate">{movie.title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {movie.genre?.join(", ")} • {movie.duration}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {movie.sessions?.length || 0} sessões configuradas
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-bold ${
+                          movie.age_rating === "L"
+                            ? "bg-green-600 text-white"
+                            : movie.age_rating === "18"
+                            ? "bg-black text-white"
+                            : "bg-yellow-500 text-black"
+                        }`}
+                      >
+                        {movie.age_rating}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditMovie(movie)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteMovie(movie.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-bold ${
-                        movie.age_rating === "L"
-                          ? "bg-green-600 text-white"
-                          : movie.age_rating === "18"
-                          ? "bg-black text-white"
-                          : "bg-yellow-500 text-black"
-                      }`}
-                    >
-                      {movie.age_rating}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditMovie(movie)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => handleDeleteMovie(movie.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                ))}
+            </div>
+          )}
+        </div>
+
+        {/* Coming Soon Section */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Clock className="w-6 h-6 text-amber-500" />
+              Em Breve
+            </h2>
+          </div>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : movies.filter((m) => m.is_coming_soon).length === 0 ? (
+            <div className="text-center py-12 glass-strong rounded-xl">
+              <p className="text-muted-foreground">Nenhum filme "Em Breve" cadastrado.</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Adicione um filme e marque a opção "Filme Em Breve" no formulário.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {movies
+                .filter((m) => m.is_coming_soon)
+                .map((movie) => (
+                  <div
+                    key={movie.id}
+                    className="glass-strong rounded-xl p-4 flex items-center gap-4 border-l-4 border-amber-500"
+                  >
+                    <img
+                      src={movie.poster_url}
+                      alt={movie.title}
+                      className="w-16 h-24 object-cover rounded-lg"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-foreground truncate">{movie.title}</h3>
+                        <span className="px-2 py-0.5 bg-amber-500 text-black text-xs font-bold rounded">
+                          Em breve
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {movie.genre?.join(", ")}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-bold ${
+                          movie.age_rating === "L"
+                            ? "bg-green-600 text-white"
+                            : movie.age_rating === "18"
+                            ? "bg-black text-white"
+                            : "bg-yellow-500 text-black"
+                        }`}
+                      >
+                        {movie.age_rating}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditMovie(movie)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteMovie(movie.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
