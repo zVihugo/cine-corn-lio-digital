@@ -68,7 +68,7 @@ const ProgramacaoSection = () => {
               Programação
             </h2>
             <p className="text-muted-foreground">
-              Confira todos os filmes em cartaz no Cine Teatro Cornélio Procópio
+              Confira todos os filmes em cartaz no Cine Cornélio Procópio
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ const ProgramacaoSection = () => {
                 Em Breve
               </h2>
               <p className="text-muted-foreground">
-                Filmes que estreiam em breve no Cine Teatro Cornélio Procópio
+                Filmes que estreiam em breve no Cine Cornélio Procópio
               </p>
             </div>
             
