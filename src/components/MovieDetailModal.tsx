@@ -210,7 +210,7 @@ const MovieDetailModal = ({ movie, onClose }: MovieDetailModalProps) => {
                 >
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-foreground">Cine Teatro Cornélio Procópio</h4>
+                    <h4 className="font-medium text-foreground">Cine Cornélio Procópio</h4>
                     <p className="text-sm text-muted-foreground">
                       Av. XV de Novembro, 84 – Centro, Cornélio Procópio – PR
                     </p>

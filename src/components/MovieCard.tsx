@@ -56,20 +56,23 @@ const MovieCard = ({ movie, onSelect, hideSessionsAndDays = false }: MovieCardPr
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-80" />
           
           {/* Age Badge */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-3 left-3">
             <Badge variant={getAgeBadgeVariant(movie.age_rating)} className="text-xs font-bold">
               {movie.age_rating === "L" ? "L" : movie.age_rating}
             </Badge>
-            {/* Coming Soon Badge */}
-            {isComingSoon && (
-              <Badge className="text-xs font-bold bg-amber-500 text-black hover:bg-amber-400">
-                Em breve
-              </Badge>
-            )}
           </div>
 
-          {/* 3D Badge if applicable */}
-          {movie.sessions?.some((s) => s.tech === "3D") && (
+          {/* Coming Soon Badge - Top Right Corner */}
+          {isComingSoon && (
+            <div className="absolute top-3 right-3">
+              <Badge className="text-xs font-bold bg-amber-500 text-black hover:bg-amber-400 uppercase tracking-wide px-2 py-1">
+                Em Breve
+              </Badge>
+            </div>
+          )}
+
+          {/* 3D Badge if applicable - positioned below coming soon or at top right */}
+          {movie.sessions?.some((s) => s.tech === "3D") && !isComingSoon && (
             <div className="absolute top-3 right-3">
               <Badge variant="tech3d" className="text-xs font-bold">3D</Badge>
             </div>

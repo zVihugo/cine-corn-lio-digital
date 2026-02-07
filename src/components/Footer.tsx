@@ -27,7 +27,7 @@ const Footer = () => {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Localização do Cine Teatro Cornélio Procópio"
+                title="Localização do Cine Cornélio Procópio"
               />
             </div>
 
@@ -175,7 +175,7 @@ const Footer = () => {
           {/* Copyright */}
           <div className="mt-8 pt-8 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Cine Teatro Cornélio Procópio. Todos os direitos reservados.
+              © {new Date().getFullYear()} Cine Cornélio Procópio. Todos os direitos reservados.
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
               Desenvolvido por Victor Moreira

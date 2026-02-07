@@ -97,10 +97,16 @@ const HeroCarousel = () => {
                 <Badge variant={getAgeBadgeVariant(currentMovie.age_rating)} className="text-sm px-3 py-1">
                   {currentMovie.age_rating === "L" ? "Livre" : `${currentMovie.age_rating}+`}
                 </Badge>
-                <Badge variant="gold" className="flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-current" />
-                  Em Destaque
-                </Badge>
+                {currentMovie.is_coming_soon ? (
+                  <Badge className="bg-amber-500 text-black font-bold uppercase tracking-wide">
+                    Em Breve
+                  </Badge>
+                ) : (
+                  <Badge variant="gold" className="flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-current" />
+                    Em Destaque
+                  </Badge>
+                )}
                 {currentMovie.sessions?.some((s) => s.tech === "3D") && (
                   <Badge variant="tech3d">3D</Badge>
                 )}
@@ -137,16 +143,18 @@ const HeroCarousel = () => {
                     Ver Trailer
                   </Button>
                 )}
-                <a
-                  href="https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="heroOutline" size="xl">
-                    <Ticket className="w-5 h-5" />
-                    Comprar Ingresso
-                  </Button>
-                </a>
+                {!currentMovie.is_coming_soon && (
+                  <a
+                    href="https://www.veloxtickets.com/Portal/Ingresso/Cinema/Cornelio-Procopio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="heroOutline" size="xl">
+                      <Ticket className="w-5 h-5" />
+                      Comprar Ingresso
+                    </Button>
+                  </a>
+                )}
               </div>
 
               {/* Sessions Preview */}
