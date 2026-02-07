@@ -64,6 +64,7 @@ export type Database = {
           duration: string | null
           genre: string[] | null
           id: string
+          is_coming_soon: boolean
           poster_url: string
           synopsis: string | null
           title: string
@@ -78,6 +79,7 @@ export type Database = {
           duration?: string | null
           genre?: string[] | null
           id?: string
+          is_coming_soon?: boolean
           poster_url: string
           synopsis?: string | null
           title: string
@@ -92,6 +94,7 @@ export type Database = {
           duration?: string | null
           genre?: string[] | null
           id?: string
+          is_coming_soon?: boolean
           poster_url?: string
           synopsis?: string | null
           title?: string

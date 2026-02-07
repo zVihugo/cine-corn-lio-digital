@@ -25,15 +25,19 @@ const ProgramacaoSection = () => {
   const [visibleMovies, setVisibleMovies] = useState<Movie[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
+  // Filter movies into "now showing" and "coming soon"
+  const nowShowingMovies = movies.filter((m) => !m.is_coming_soon);
+  const comingSoonMovies = movies.filter((m) => m.is_coming_soon);
+
   useEffect(() => {
-    let filtered = movies;
+    let filtered = nowShowingMovies;
     
     if (selectedGenre !== "Todos") {
       filtered = filtered.filter((m) => m.genre?.includes(selectedGenre));
     }
     
     setVisibleMovies(filtered);
-  }, [selectedGenre, movies]);
+  }, [selectedGenre, nowShowingMovies.length, movies]);
 
   // Intersection Observer for fade-in animation
   useEffect(() => {
@@ -96,8 +100,8 @@ const ProgramacaoSection = () => {
           </div>
         )}
 
-        {/* Movies Grid */}
-        {!isLoading && visibleMovies.length > 0 ? (
+        {/* Movies Grid - Now Showing */}
+        {!isLoading && visibleMovies.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
             {visibleMovies.map((movie, index) => (
               <div
@@ -109,21 +113,57 @@ const ProgramacaoSection = () => {
               </div>
             ))}
           </div>
-        ) : (
-          !isLoading && (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground text-lg mb-4">
-                {movies.length === 0
-                  ? "Nenhum filme cadastrado ainda"
-                  : "Nenhum filme encontrado para os filtros selecionados"}
+        )}
+
+        {/* Empty state for now showing */}
+        {!isLoading && nowShowingMovies.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground text-lg mb-4">
+              {movies.length === 0
+                ? "Nenhum filme cadastrado ainda"
+                : "Nenhum filme em cartaz no momento"}
+            </p>
+          </div>
+        )}
+
+        {/* No results for filter */}
+        {!isLoading && visibleMovies.length === 0 && nowShowingMovies.length > 0 && (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground text-lg mb-4">
+              Nenhum filme encontrado para os filtros selecionados
+            </p>
+            {selectedGenre !== "Todos" && (
+              <Button variant="outline" onClick={() => setSelectedGenre("Todos")}>
+                Limpar Filtros
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Coming Soon Section */}
+        {!isLoading && comingSoonMovies.length > 0 && (
+          <div className="mt-16">
+            <div className="mb-8">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+                Em Breve
+              </h2>
+              <p className="text-muted-foreground">
+                Filmes que estreiam em breve no Cine Teatro Cornélio Procópio
               </p>
-              {selectedGenre !== "Todos" && (
-                <Button variant="outline" onClick={() => setSelectedGenre("Todos")}>
-                  Limpar Filtros
-                </Button>
-              )}
             </div>
-          )
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+              {comingSoonMovies.map((movie, index) => (
+                <div
+                  key={movie.id}
+                  className="movie-card-wrapper opacity-0 h-full"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <MovieCard movie={movie} onSelect={setSelectedMovie} hideSessionsAndDays />
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
